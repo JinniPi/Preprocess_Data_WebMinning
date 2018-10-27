@@ -7,11 +7,12 @@ import re
 FJoin = os.path.join
 class Process_file:
 	def readFile(self,fileName):
-		data_result = []
 		with open(fileName) as jsondata:
 			datas = json.load(jsondata)
-			print(datas[0])
-			print(type(datas))
+			# for data in datas:
+			# 	i = i + 1
+			# 	print(i)
+			# 	print(data['review_body'])
 		return datas
 
 	def replaceUnicode(self, str):
@@ -138,6 +139,8 @@ class Process_file:
 		return str
 
 	def replacePunct(self,str):
+		str = str.lower()
+		str = str.replace("'m","")
 		str = str.replace("("," ")
 		str = str.replace(")"," ")
 		str = str.replace("!"," ")
@@ -145,7 +148,7 @@ class Process_file:
 		str = str.replace(","," ")
 		str = str.replace(":"," ")
 		str = str.replace("?"," ")
-		# str = str.replace("n't","")
+		str = str.replace("n't"," not")
 		str = str.replace("'s","")
 		str = str.replace("'re","")
 		str = str.replace("'d","")
@@ -153,18 +156,29 @@ class Process_file:
 		str = str.replace("--"," ")
 		str = str.replace("'ve","")
 		str = str.replace(";","")
+		str = str.replace("ʒஐ","")
+		str = str.replace("ӝ","")
+		str = str.replace("ஐƹ","")
+		str = str.replace("_","")
 		str = re.sub(r'(?is)\d+', ' ', str).strip()
 		str = re.sub(r'(?is)\W+', ' ', str).strip()
 		# str = str.replace("n't"," not")
 		return str
 
+	def readStopword(self,file_stopword):
+		f = open(file_stopword,"r")
+		str = f.read()
+		# f.close()
+		list_stopword = str.split('\n')
+		return list_stopword
+
 	def removeStopword_stem(self,str):
 		ps = PorterStemmer()
-		stopWords = set(stopwords.words('english'))
+		stopWords = self.readStopword('stopwords.txt')
 		words_result = []
 		words = word_tokenize(str)
 		for word in words:
-			if word not in stopWords:
+			if word not in stopWords :
 				word = ps.stem(word)
 				words_result.append(word)
 		return words_result
@@ -179,7 +193,7 @@ class Process_file:
 		# str_result = self.replaceUnicode(str)
 		str_result = self.replacePunct(str_)
 		word_list = self.removeStopword_stem(str_result)
-		result = self.Concate_list(word_list).replace("n't","not")
+		result = self.Concate_list(word_list)
 		return result
 	def Process_data(self,datas):
 		for data in datas:
@@ -231,8 +245,9 @@ class Process_file:
 if __name__ =="__main__":
 
 	i = Process_file()
-	i.Process_path('/home/trang/Process_Pr/data_raw')
-
+	i.Process_path('/home/trang/Process_Pr/data_book')
+	# i.readFile('/home/trang/Process_Pr/data_book/review_book_03.json')
+	
 
 
 
